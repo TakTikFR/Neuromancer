@@ -1,0 +1,10 @@
+[package]
+name = "Neuromancer"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+candle-core = "0.9"
+
+[dev-dependencies]
+criterion = "0.5"
