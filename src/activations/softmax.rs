@@ -2,11 +2,13 @@ use crate::layers::Layer;
 use crate::tensor::Tensor;
 use candle_core::Result;
 
-pub struct Softmax;
+pub struct Softmax {
+    probs: Option<Tensor>,
+}
 
 impl Softmax {
     pub fn new() -> Self {
-        Self
+        Self { prob: None }
     }
 }
 
@@ -16,11 +18,17 @@ impl Layer for Softmax {
         let input_sub = input.broadcast_sub(&max)?;
         let exp = input_sub.exp()?;
         let exp_sum = exp.sum_keepdim(1)?;
-        exp.broadcast_div(&exp_sum)
+        let p = exp.broadcast_div(&exp_sum)?;
+
+        self.probs = Some(p.clone());
+        Ok(p)
     }
 
-    fn backward(&mut self, _grad_output: &Tensor) -> Result<Tensor> {
-        unimplemented!("Softmax backward handled by the loss")
+    fn backward(&mut self, grad_output: &Tensor) -> Result<Tensor> {
+        let probs = self.probs.as_ref().unwrap();
+        let dot = (grad_output * probs)?.sum_keepdim(1)?;
+        let diff = grad_output.broadcast_sub(&dot)?;
+        probs * diff
     }
 
     fn params_and_grads(&mut self) -> Vec<(&Tensor, &Tensor)> {
