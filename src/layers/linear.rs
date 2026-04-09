@@ -1,5 +1,5 @@
 use crate::layers::Layer;
-use crate::tensor::{Tensor, Device, DType};
+use crate::tensor::{DType, Device, Tensor};
 use candle_core::Result;
 
 pub struct Linear {
@@ -44,11 +44,15 @@ impl Layer for Linear {
         grad_output.matmul(&self.weights)
     }
 
-    fn params_and_grads(&mut self) -> Vec<(&Tensor, &Tensor)> {
+    fn params(&mut self) -> Vec<&mut Tensor> {
+        vec![&mut self.weights, &mut self.bias]
+    }
+
+    fn grads(&self) -> Vec<&Tensor> {
         let mut result = Vec::new();
         if let (Some(gw), Some(gb)) = (&self.grad_weights, &self.grad_bias) {
-            result.push((&self.weights, gw));
-            result.push((&self.bias, gb));
+            result.push(gw);
+            result.push(gb);
         }
         result
     }
