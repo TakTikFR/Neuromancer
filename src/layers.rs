@@ -10,5 +10,6 @@ use candle_core::Result;
 pub trait Layer {
     fn forward(&mut self, input: &Tensor) -> Result<Tensor>;
     fn backward(&mut self, grad_output: &Tensor) -> Result<Tensor>;
-    fn params_and_grads(&mut self) -> Vec<(&Tensor, &Tensor)>;
+    pub fn params(&mut self) -> Vec<&mut Tensor>;
+    pub fn grads(&self) -> Vec<&Tensor>;
 }

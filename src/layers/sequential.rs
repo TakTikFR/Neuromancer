@@ -15,7 +15,7 @@ impl Sequential {
         self.layers.push(Box::new(layer));
     }
 
-    pub fn forward(&self, input: &Tensor) -> Result<Tensor> {
+    pub fn forward(&mut self, input: &Tensor) -> Result<Tensor> {
         let mut x = input.clone();
 
         for layer in self.layers.iter_mut() {
@@ -24,12 +24,16 @@ impl Sequential {
         Ok(x)
     }
 
-    pub fn backward(&self, grad: &Tensor) -> Result<Tensor> {
+    pub fn backward(&mut self, grad: &Tensor) -> Result<Tensor> {
         let mut y = grad.clone();
 
         for layer in self.layers.iter_mut().rev() {
             y = layer.backward(&y)?;
         }
         Ok(y)
+    }
+
+    pub fn layers_mut(&mut self) -> &mut Vec<Box<dyn Layer>> {
+        &mut self.layers
     }
 }
