@@ -2,7 +2,7 @@ use crate::tensor::Tensor;
 use candle_core::Result;
 
 pub fn cross_entropy(probs: &Tensor, targets: &Tensor) -> Result<(Tensor, Tensor)> {
-    let loss = (targets * probs.log()?)?
+    let loss = (targets * (probs + 1e-8)?.log()?)?
         .sum_keepdim(1)?
         .mean_all()?
         .neg()?;
