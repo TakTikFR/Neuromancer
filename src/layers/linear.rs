@@ -56,4 +56,10 @@ impl Layer for Linear {
         }
         result
     }
+
+    fn zero_grad(&mut self) -> Result<()> {
+        self.grad_weights = Some(self.weights.zeros_like()?);
+        self.grad_bias = Some(self.bias.zeros_like()?);
+        Ok(())
+    }
 }

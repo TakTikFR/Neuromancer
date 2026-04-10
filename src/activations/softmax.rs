@@ -38,4 +38,8 @@ impl Layer for Softmax {
     fn grads(&self) -> Vec<&Tensor> {
         vec![]
     }
+
+    fn zero_grad(&mut self) -> Result<()> {
+        Ok(())
+    }
 }

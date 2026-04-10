@@ -12,4 +12,5 @@ pub trait Layer {
     fn backward(&mut self, grad_output: &Tensor) -> Result<Tensor>;
     fn params(&mut self) -> Vec<&mut Tensor>;
     fn grads(&self) -> Vec<&Tensor>;
+    fn zero_grad(&mut self) -> Result<()>;
 }
