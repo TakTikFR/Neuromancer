@@ -24,7 +24,10 @@ impl Layer for ReLU {
         grad_output.mul(&input.gt(0f32)?.to_dtype(F32)?)
     }
 
-    fn params_and_grads(&mut self) -> Vec<(&Tensor, &Tensor)> {
+    fn params(&mut self) -> Vec<&mut Tensor> {
+        vec![]
+    }
+    fn grads(&self) -> Vec<&Tensor> {
         vec![]
     }
 }

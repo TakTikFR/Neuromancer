@@ -8,7 +8,7 @@ pub struct Softmax {
 
 impl Softmax {
     pub fn new() -> Self {
-        Self { prob: None }
+        Self { probs: None }
     }
 }
 
@@ -31,7 +31,11 @@ impl Layer for Softmax {
         probs * diff
     }
 
-    fn params_and_grads(&mut self) -> Vec<(&Tensor, &Tensor)> {
+    fn params(&mut self) -> Vec<&mut Tensor> {
+        vec![]
+    }
+
+    fn grads(&self) -> Vec<&Tensor> {
         vec![]
     }
 }
