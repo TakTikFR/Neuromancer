@@ -56,7 +56,7 @@ impl Optimizer for SGD {
 
     fn zero_grad(&mut self, model: &mut Sequential) -> Result<()> {
         for layer in model.layers_mut() {
-            // Create the zeros() function in layer struct
+            layer.zero_grad();
         }
 
         Ok()
