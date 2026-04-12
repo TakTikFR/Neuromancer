@@ -4,7 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-candle-core = "0.9"
+candle-core = { git = "https://github.com/huggingface/candle" }
+candle-datasets = { git = "https://github.com/huggingface/candle" }
+rand = "0.8"
+indicatif = "0.17"
 
 [dev-dependencies]
 criterion = "0.5"
