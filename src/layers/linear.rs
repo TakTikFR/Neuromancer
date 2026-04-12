@@ -48,11 +48,11 @@ impl Layer for Linear {
         vec![&mut self.weights, &mut self.bias]
     }
 
-    fn grads(&self) -> Vec<&Tensor> {
+    fn grads(&self) -> Vec<Tensor> {
         let mut result = Vec::new();
         if let (Some(gw), Some(gb)) = (&self.grad_weights, &self.grad_bias) {
-            result.push(gw);
-            result.push(gb);
+            result.push(gw.clone());
+            result.push(gb.clone());
         }
         result
     }

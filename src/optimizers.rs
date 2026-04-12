@@ -1,12 +1,13 @@
-pub mod adamw;
+pub mod adam;
 pub mod sgd;
 
-pub use adamw::adamw;
-pub use sgd::sgd;
+pub use adam::Adam;
+pub use sgd::SGD;
 
-use sequential::Sequential;
+use crate::layers::Sequential;
+use candle_core::Result;
 
 pub trait Optimizer {
-    fn step(&self, &mut model: Sequential);
-    fn zero_grad(&self, &mut model: Sequential);
+    fn step(&mut self, model: &mut Sequential) -> Result<()>;
+    fn zero_grad(&mut self, model: &mut Sequential) -> Result<()>;
 }

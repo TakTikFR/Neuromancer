@@ -1,11 +1,12 @@
-use crate::layers::Layer;
+use crate::layers::Sequential;
 use crate::optimizers::Optimizer;
 use crate::tensor::Tensor;
 use candle_core::Result;
 
 pub struct Adam {
     lr: f64,
-    betas: (f64, f64),
+    beta1: f64,
+    beta2: f64,
     epsilon: f64,
     mt_1: Vec<Tensor>,
     vt_1: Vec<Tensor>,
@@ -13,7 +14,7 @@ pub struct Adam {
 }
 
 impl Adam {
-    pub fn new(learning_rate: f64) -> self {
+    pub fn new(learning_rate: f64) -> Self {
         Self {
             lr: learning_rate,
             beta1: 0.9,
@@ -26,8 +27,8 @@ impl Adam {
     }
 
     pub fn betas(mut self, betas: (f64, f64)) -> Self {
-        self.beta1 = betas[0];
-        self.beta2 = betas[1];
+        self.beta1 = betas.0;
+        self.beta2 = betas.1;
         self
     }
 
@@ -40,8 +41,8 @@ impl Adam {
 impl Optimizer for Adam {
     fn step(&mut self, model: &mut Sequential) -> Result<()> {
         for layer in model.layers_mut() {
-            let grads = layer.grads();
-            let params = layer.params;
+            let grads = layer.grads().to_vec();
+            let params = layer.params();
 
             for (idx, (param, grad)) in params.into_iter().zip(grads.iter()).enumerate() {
                 if self.mt_1.len() <= idx {
@@ -49,20 +50,21 @@ impl Optimizer for Adam {
                     self.vt_1.push(Tensor::zeros_like(param)?);
                 }
 
-                t += 1;
-                let mt = self.beta1 * self.mt_1[idx] + (1 - self.beta1) * grad;
-                let vt = self.beta2 * self.vt_1[idx] + (1 - self.beta2) * grad.powf(2.0);
-                let mt_hat = mt / (1 - self.beta1.powf(self.t));
-                let vt_hat = vt / (1 - self.beta2.powf(self.t));
-                param = param - self.lr * mt_hat / (vt_hat.sqrt() + self.epsilon);
-
-                Ok(())
+                self.t += 1;
+                let mt = ((self.beta1 * &self.mt_1[idx])? + ((1.0 - self.beta1) * grad)?)?;
+                let vt =
+                    ((self.beta2 * &self.vt_1[idx])? + ((1.0 - self.beta2) * grad.powf(2.0)?)?)?;
+                let mt_hat = (mt / (1.0 - self.beta1.powi(self.t as i32)))?;
+                let vt_hat = (vt / (1.0 - self.beta2.powi(self.t as i32)))?;
+                *param = (&*param - ((self.lr * mt_hat)? / (vt_hat.sqrt()? + self.epsilon)?)?)?;
             }
         }
+
+        Ok(())
     }
 
     fn zero_grad(&mut self, model: &mut Sequential) -> Result<()> {
-        for layer in model.layer_mut() {
+        for layer in model.layers_mut() {
             layer.zero_grad()?;
         }
 

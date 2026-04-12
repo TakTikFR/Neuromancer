@@ -1,4 +1,4 @@
-use crate::layers::Layer;
+use crate::layers::Sequential;
 use crate::optimizers::Optimizer;
 use crate::tensor::Tensor;
 use candle_core::Result;
@@ -33,21 +33,27 @@ impl SGD {
 
 impl Optimizer for SGD {
     fn step(&mut self, model: &mut Sequential) -> Result<()> {
+        let mut global_idx = 0;
+
         for layer in model.layers_mut() {
-            let grads = layer.grads();
+            let grads = layer.grads().to_vec();
             let params = layer.params();
 
             for (idx, (param, grad)) in params.into_iter().zip(grads.iter()).enumerate() {
-                if self.velocity.len() <= idx {
+                if self.velocity.len() <= global_idx {
                     self.velocity.push(Tensor::zeros_like(param)?);
                 }
 
-                self.velocity[idx] = self.momentum * self.velocity[idx] - self.lr * grad;
+                self.velocity[global_idx] =
+                    (self.momentum * (&self.velocity[global_idx] - (self.lr * grad)?)?)?;
                 if self.nesterov {
-                    *param += self.momentum * self.velocity[idx] - self.lr * grad
+                    *param = (&*param
+                        + (self.momentum * (&self.velocity[global_idx] - (self.lr * grad)?)?)?)?;
                 } else {
-                    *param += self.velocity[idx];
+                    *param = (&*param + &self.velocity[global_idx])?;
                 }
+
+                global_idx += 1;
             }
         }
 

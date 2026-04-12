@@ -35,7 +35,7 @@ impl Layer for Softmax {
         vec![]
     }
 
-    fn grads(&self) -> Vec<&Tensor> {
+    fn grads(&self) -> Vec<Tensor> {
         vec![]
     }
 
