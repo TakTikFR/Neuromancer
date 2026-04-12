@@ -51,14 +51,14 @@ impl Optimizer for SGD {
             }
         }
 
-        Ok()
+        Ok(())
     }
 
     fn zero_grad(&mut self, model: &mut Sequential) -> Result<()> {
         for layer in model.layers_mut() {
-            layer.zero_grad();
+            layer.zero_grad()?;
         }
 
-        Ok()
+        Ok(())
     }
 }
