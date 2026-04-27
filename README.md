@@ -82,15 +82,15 @@ Neuromancer/
 
 - [x] ReLU
 - [x] Softmax
+- [x] GELU
 - [ ] Sigmoid
 - [ ] Tanh
-- [ ] GELU
 
 ### 📉 Loss Functions
 
 - [x] CrossEntropy
-- [ ] MSE
-- [ ] L1
+- [x] MSE
+- [x] L1
 
 ### 🏃 Optimizers
 
