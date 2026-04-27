@@ -39,8 +39,11 @@ Neuromancer/
 ├── README.md
 └── src
     ├── activations
+    │   ├── gelu.rs
     │   ├── relu.rs
-    │   └── softmax.rs
+    │   ├── sigmoid.rs
+    │   ├── softmax.rs
+    │   └── tanh.rs
     ├── activations.rs
     ├── data
     │   ├── dataloader.rs
@@ -52,7 +55,9 @@ Neuromancer/
     ├── layers.rs
     ├── lib.rs
     ├── loss
-    │   └── cross_entropy.rs
+    │   ├── cross_entropy.rs
+    │   ├── l1.rs
+    │   └── mse.rs
     ├── loss.rs
     ├── main.rs
     ├── optimizers
